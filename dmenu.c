@@ -52,19 +52,19 @@ static int bh, mw, mh;
 static int inputw, promptw;
 static size_t cursor = 0;
 static const char *font = NULL;
-static const char *prompt = "Please state the nature of your query.";
+static const char *prompt = "λ";
 static const char *normbgcolor = "#191919";
 static const char *normfgcolor = "#268bd2";
 static const char *selbgcolor  = "#268bd2";
 static const char *selfgcolor  = "#191919";
-static const char *dimcolor = NULL; 
+static const char *dimcolor = NULL;
 static char *name = "dmenu";
 static char *class = "Dmenu";
 static char *dimname = "dimenu";
-static unsigned int lines = 0, line_height = 0;
+static unsigned int lines = 10, line_height = 0;
 static int xoffset = 0;
 static int yoffset = 0;
-static int width = 0;
+static int width = 300;
 #ifdef XINERAMA
 static int snum = -1;
 #endif
@@ -72,9 +72,9 @@ static ColorSet *normcol;
 static ColorSet *selcol;
 static ColorSet *dimcol;
 static Atom clip, utf8;
-static Bool topbar = False;
+static Bool topbar = True;
 static Bool running = True;
-static Bool filter = False;
+static Bool filter = True;
 static Bool maskin = False;
 static Bool noinput = False;
 static int ret = 0;
@@ -152,7 +152,7 @@ main(int argc, char *argv[]) {
 		else if (!strcmp(argv[i], "-o"))  /* opacity */
 			opacity = atof(argv[++i]);
 		else if (!strcmp(argv[i], "-dim"))  /* dim opacity */
-			dimopacity = atof(argv[++i]);	
+			dimopacity = atof(argv[++i]);
 		else if (!strcmp(argv[i], "-dc")) /* dim color */
 			dimcolor = argv[++i];
 		else if(!strcmp(argv[i], "-p"))   /* adds prompt to left of input field */
@@ -328,7 +328,7 @@ drawmenu(void) {
 	if((curpos = textnw(dc, maskin ? maskinput : text, length) + dc->font.height/2) < dc->w)
 		drawrect(dc, curpos, (dc->h - dc->font.height)/2 + 1, 1, dc->font.height -1, True, normcol->FG);
 
-    if(!quiet || strlen(text) > 0) {    
+    if(!quiet || strlen(text) > 0) {
         if(lines > 0) {
             /* draw vertical list */
             dc->w = mw - dc->x;
@@ -578,7 +578,7 @@ keypress(XKeyEvent *ev) {
 				cursor = strlen(text);
 				match();
 			}
-		} 
+		}
 		break;
 	}
 	drawmenu();
@@ -687,7 +687,7 @@ matchfuzzy(void) {
 	size_t len;
 	Item *item;
 	char *pos;
-	
+
 	len = strlen(text);
 	matches = matchend = NULL;
 	for(item = items; item && item->text; item++) {
@@ -822,7 +822,7 @@ setup(void) {
 			x = info[snum].x_org;
 			y = info[snum].y_org + (topbar ? yoffset : info[i].height - mh - yoffset);
 			mw = info[snum].width;
-			
+
 			dimx = info[snum].x_org;
 			dimy = info[snum].y_org;
 			dimw = info[snum].width;
@@ -867,10 +867,10 @@ setup(void) {
 		x = 0;
 		y = topbar ? 0 : DisplayHeight(dc->dpy, screen) - mh - yoffset;
 		mw = DisplayWidth(dc->dpy, screen);
-		
+
 		dimx = 0;
 		dimy = 0;
-		dimw = WidthOfScreen(defScreen); 
+		dimw = WidthOfScreen(defScreen);
 		dimh = HeightOfScreen(defScreen);
 	}
 
@@ -879,9 +879,9 @@ setup(void) {
 	promptw = (prompt && *prompt) ? textw(dc, prompt) : 0;
 	inputw = MIN(inputw, mw/3);
 	match();
-	
+
 	swa.override_redirect = True;
-	
+
 	/* create dim window */
 	if(dimopacity > 0) {
 		swa.background_pixel = dimcol->BG;
@@ -892,16 +892,16 @@ setup(void) {
 	                    CWOverrideRedirect | CWBackPixel | CWEventMask, &swa);
 		XClassHint dimhint = { .res_name = dimname, .res_class = class };
   	XSetClassHint(dc->dpy, dim, &dimhint);
-  
+
 		dimopacity = MIN(MAX(dimopacity, 0), 1);
   	unsigned int dimopacity_set = (unsigned int)(dimopacity * OPAQUE);
   	XChangeProperty(dc->dpy, dim, XInternAtom(dc->dpy, OPACITY, False),
 											XA_CARDINAL, 32, PropModeReplace,
 											(unsigned char *) &dimopacity_set, 1L);
-	
+
 		XMapRaised(dc->dpy, dim);
 	}
-	
+
 	/* create menu window */
 	swa.background_pixel = normcol->BG;
 	swa.event_mask = ExposureMask | KeyPressMask | VisibilityChangeMask;
@@ -917,7 +917,7 @@ setup(void) {
   XChangeProperty(dc->dpy, win, XInternAtom(dc->dpy, OPACITY, False),
 											XA_CARDINAL, 32, PropModeReplace,
 											(unsigned char *) &opacity_set, 1L);
-	
+
 	/* open input methods */
 	xim = XOpenIM(dc->dpy, NULL, NULL, NULL);
 	xic = XCreateIC(xim, XNInputStyle, XIMPreeditNothing | XIMStatusNothing,
