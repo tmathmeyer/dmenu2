@@ -1,4 +1,6 @@
 /* See LICENSE file for copyright and license details. */
+#define _DEFAULT_SOURCE
+
 #include <locale.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -32,7 +34,7 @@ drawtext(DC *dc, const char *text, ColorSet *col) {
 	if(mn < n)
 		for(n = MAX(mn-3, 0); n < mn; buf[n++] = '.');
 
-	drawrect(dc, 0, 0, dc->w, dc->h, True, col->BG);
+	drawrect(dc, 0, 0, dc->w-1, dc->h-1, True, col->BG);
 	drawtextn(dc, buf, mn, col);
 }
 
@@ -173,7 +175,7 @@ initfont(DC *dc, const char *fontstr) {
 
 void
 mapdc(DC *dc, Window win, unsigned int w, unsigned int h) {
-	XCopyArea(dc->dpy, dc->canvas, win, dc->gc, 0, 0, w, h, 0, 0);
+	XCopyArea(dc->dpy, dc->canvas, win, dc->gc, 0, 0, w+2, h+2, 0, 0);
 }
 
 void

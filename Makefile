@@ -6,7 +6,7 @@ include config.mk
 SRC = dmenu.c draw.c stest.c
 OBJ = ${SRC:.c=.o}
 
-all: options dmenu stest
+all: dmenu stest
 
 options:
 	@echo dmenu build options:

@@ -1,4 +1,7 @@
 /* See LICENSE file for copyright and license details. */
+
+#define _DEFAULT_SOURCE
+
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -57,14 +60,15 @@ static const char *normbgcolor = "#191919";
 static const char *normfgcolor = "#268bd2";
 static const char *selbgcolor  = "#268bd2";
 static const char *selfgcolor  = "#191919";
+static const char *bordercolor = "#191919";
 static const char *dimcolor = NULL;
 static char *name = "dmenu";
 static char *class = "Dmenu";
 static char *dimname = "dimenu";
-static unsigned int lines = 10, line_height = 0;
+static unsigned int lines = 0, line_height = 0;
 static int xoffset = 0;
 static int yoffset = 0;
-static int width = 300;
+static int width = 0;
 #ifdef XINERAMA
 static int snum = -1;
 #endif
@@ -167,6 +171,8 @@ main(int argc, char *argv[]) {
 			selbgcolor = argv[++i];
 		else if(!strcmp(argv[i], "-sf"))  /* selected foreground color */
 			selfgcolor = argv[++i];
+        else if(!strcmp(argv[i], "-bc"))  /* selected border color */
+            bordercolor = argv[++i];
 		else
 			usage();
 
@@ -313,9 +319,12 @@ drawmenu(void) {
 	dc->x = 0;
 	dc->y = 0;
 	dc->h = bh;
-	drawrect(dc, 0, 0, mw, mh, True, normcol->BG);
+
+    drawrect(dc, 0, 0, mw, mh, False, getcolor(dc, bordercolor));
+	drawrect(dc, 1, 1, mw-2, mh-2, True, normcol->BG);
 
 	if(prompt && *prompt) {
+        dc->x++;
 		dc->w = promptw;
 		drawtext(dc, prompt, selcol);
 		dc->x = dc->w;
@@ -325,8 +334,9 @@ drawmenu(void) {
 	/* draw input field */
 	dc->w = (lines > 0 || !matches) ? mw - dc->x : inputw;
 	drawtext(dc, maskin ? createmaskinput(maskinput, length) : text, normcol);
-	if((curpos = textnw(dc, maskin ? maskinput : text, length) + dc->font.height/2) < dc->w)
+	if((curpos = textnw(dc, maskin ? maskinput : text, length) + dc->font.height/2) < dc->w){
 		drawrect(dc, curpos, (dc->h - dc->font.height)/2 + 1, 1, dc->font.height -1, True, normcol->FG);
+    }
 
     if(!quiet || strlen(text) > 0) {
         if(lines > 0) {
@@ -354,6 +364,7 @@ drawmenu(void) {
                 drawtext(dc, ">", normcol);
         }
     }
+
 	mapdc(dc, win, mw, mh);
 }
 
@@ -596,6 +607,8 @@ strchri(const char *s, int c) {
 		l = strchr(s, c);
 		u = strchr(s, toupper(c));
 	}
+    *u = *u;
+    return l;
 }
 
 
