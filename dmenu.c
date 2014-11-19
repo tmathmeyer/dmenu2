@@ -78,7 +78,7 @@ static ColorSet *dimcol;
 static Atom clip, utf8;
 static Bool topbar = True;
 static Bool running = True;
-static Bool filter = True;
+static Bool filter = False;
 static Bool maskin = False;
 static Bool noinput = False;
 static int ret = 0;
@@ -107,7 +107,7 @@ main(int argc, char *argv[]) {
 	for(i = 1; i < argc; i++)
 		/* these options take no arguments */
 		if(!strcmp(argv[i], "-v")) {      /* prints version information */
-			puts("dmenu-"VERSION", © 2006-2012 dmenu engineers, see LICENSE for details");
+			puts("dmenu-"VERSION", © 2006-2014 dmenu engineers, see LICENSE for details");
 			exit(EXIT_SUCCESS);
 		}
 		else if(!strcmp(argv[i], "-b"))   /* appears at the bottom of the screen */
