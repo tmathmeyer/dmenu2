@@ -21,7 +21,7 @@
                              * MAX(0, MIN((y)+(h),(r).y_org+(r).height) - MAX((y),(r).y_org)))
 #define MIN(a,b)              ((a) < (b) ? (a) : (b))
 #define MAX(a,b)              ((a) > (b) ? (a) : (b))
-#define DEFFONT "Inconsolata-17" /* xft example: "Monospace-11" */
+#define DEFFONT "Inconsolata-11" /* xft example: "Monospace-11" */
 
 typedef struct Item Item;
 struct Item {
